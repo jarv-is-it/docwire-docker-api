@@ -22,6 +22,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get -y install \
+        supervisor \
         apache2 \
         libapache2-mod-php \
         libapache2-mod-auth-openidc \
@@ -75,13 +76,14 @@ ENV OPENSSL_MODULES="/usr/local/docwire/installed/x64-linux-dynamic/lib/ossl-mod
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-ARG CACHEBUST_CONFIG=1
+ARG CACHEBUST_CONFIG=3
 
 # Override default apache and php config
 
 COPY config/000-default.conf /etc/apache2/sites-available
 COPY config/mpm_prefork.conf /etc/apache2/mods-available
 COPY config/99-local.ini     /etc/php/8.1/apache2/conf.d
+COPY config/supervisor.conf     /etc/supervisor/conf.d/supervisor.conf
 
 RUN rm -f /var/www/html/index.html
 
@@ -89,9 +91,10 @@ RUN rm -f /var/www/html/index.html
 
 ARG CACHEBUST_COMPOSER=2
 
+COPY ./src/composer.json /var/www/html
+COPY ./src/composer.lock /var/www/html
+
 WORKDIR /var/www/html
-COPY ./src/composer.json .
-COPY ./src/composer.lock .
 
 RUN composer install --no-scripts
 
@@ -108,14 +111,14 @@ RUN php artisan route:cache
 RUN php artisan event:cache
 RUN php artisan config:cache
 
+RUN chown -R www-data:www-data /var/log/apache2
 RUN chown -R www-data:www-data /var/www/html
 
 RUN chmod -R 755 /var/www/html/storage
-RUN chmod -R 755 //var/www/html/bootstrap/cache
+RUN chmod -R 755 /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
-USER www-data
+# USER www-data
 
-ENTRYPOINT ["apache2ctl", "-D", "FOREGROUND"]
-
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

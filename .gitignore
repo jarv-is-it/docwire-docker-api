@@ -1,5 +1,7 @@
+test
 prune.bat
 build.bat
+shell.bat
 start.bat
 stop.bat
 push.bat
