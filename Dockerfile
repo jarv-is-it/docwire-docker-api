@@ -1,4 +1,4 @@
-# A Docker image that exposes docwire through a simple REST API
+# A Docker image that exposes DocWire through a simple REST API
 # Copyright (C) 2024 Filippo Toso - https://toso.dev/
 # 
 # This program is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 FROM ubuntu:noble
-LABEL Author="Filippo Toso" Description="A docker image that exposes a docwire through a simple REST API"
+LABEL Author="Filippo Toso" Description="A docker image that exposes a DocWire through a simple REST API"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -95,7 +95,7 @@ COPY ./src/composer.lock .
 
 RUN composer install --no-scripts
 
-ARG CACHEBUST_APP=3
+ARG CACHEBUST_APP=4
 
 COPY src /var/www/html
 

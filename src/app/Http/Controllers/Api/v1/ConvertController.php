@@ -30,6 +30,8 @@ class ConvertController
 
         $content = Helper::fixEncoding(implode(PHP_EOL, $output));
 
+        $directory->delete();
+
         if ($resultCode != 0) {
             return response()->json([
                 'success' => false,

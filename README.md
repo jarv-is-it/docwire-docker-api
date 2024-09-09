@@ -1,6 +1,6 @@
 # Description
 
-A Docker image that exposes docwire through a simple REST API
+A Docker image that exposes DocWire through a simple REST API
 
 # Building
 

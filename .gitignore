@@ -1,4 +1,6 @@
-run.bat
-build.bat
 prune.bat
+build.bat
+start.bat
+stop.bat
+push.bat
 update.bat
