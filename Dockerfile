@@ -23,6 +23,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get -y install \
         supervisor \
+        cron \
         apache2 \
         libapache2-mod-php \
         libapache2-mod-auth-openidc \
@@ -128,7 +129,9 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html/storage
 RUN chmod -R 755 /var/www/html/bootstrap/cache
 
-COPY config/laravel.cron /etc/cron.d/laravel.cron
+COPY config/laravel /etc/cron.d/laravel
+RUN chmod 0644 /etc/cron.d/laravel
+RUN crontab -u www-data /etc/cron.d/laravel
 
 RUN mkdir /opt/tools
 COPY scripts/entrypoint.sh /opt/tools/entrypoint.sh
@@ -136,8 +139,4 @@ RUN chmod +x /opt/tools/entrypoint.sh
 
 EXPOSE 80
 
-# USER www-data
-
 ENTRYPOINT ["/opt/tools/entrypoint.sh"]
-
-# ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

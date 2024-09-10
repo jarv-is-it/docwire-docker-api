@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Jarv.is.it - Docwire REST Api</title>
+    <title>Jarv.is.it - DocWire REST Api</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -29,7 +29,7 @@
 
 <body>
     <div class="container">
-        <h1 class="text-center">Jarv.is.it - Docwire REST Api</h1>
+        <h1 class="text-center">Jarv.is.it - DocWire REST Api</h1>
         <p>You can access the API without authentication using the following details:</p>
 
         <p>
