@@ -61,11 +61,22 @@ RUN apt-get update && \
     a2enmod rewrite headers expires ext_filter
 
 # Install docwire
-RUN mkdir /opt/temp
-RUN wget -c "https://github.com/docwire/docwire/releases/download/2024.07.31/docwire-2024.07.31-x64-linux-dynamic-gcc-13.2.0.tar.bz2" -P /opt/temp
-RUN tar -xvf "/opt/temp/docwire-2024.07.31-x64-linux-dynamic-gcc-13.2.0.tar.bz2" -C /opt/temp
-RUN mv /opt/temp/docwire-2024.07.31 /usr/local/docwire
-RUN rm -rf /opt/temp/
+RUN mkdir /opt/temp && \
+    wget -c "https://github.com/docwire/docwire/releases/download/2024.07.31/docwire-2024.07.31-x64-linux-dynamic-gcc-13.2.0.tar.bz2" -P /opt/temp && \
+    tar -xvf "/opt/temp/docwire-2024.07.31-x64-linux-dynamic-gcc-13.2.0.tar.bz2" -C /opt/temp && \
+    mv /opt/temp/docwire-2024.07.31 /usr/local/docwire && \
+    rm -rf /opt/temp/ && \
+    rm -f /usr/local/docwire/.vcpkg-root && \
+    rm -f /usr/local/docwire/setup_env.sh && \
+    rm -f /usr/local/docwire/vcpkg && \
+    rm -rf /usr/local/docwire/scripts && \
+    rm -rf /usr/local/docwire/installed/vcpkg && \
+    rm -rf /usr/local/docwire/installed/x64-linux \
+    rm -rf /usr/local/docwire/installed/x64-linux-dynamic/debug && \
+    rm -rf /usr/local/docwire/installed/x64-linux-dynamic/include && \
+    rm -rf /usr/local/docwire/installed/x64-linux-dynamic/share && \
+    rm -rf /usr/local/docwire/installed/x64-linux-dynamic/src 
+    
 ENV PATH="/usr/local/docwire/installed/x64-linux-dynamic/tools:$PATH"
 ENV LD_LIBRARY_PATH="/usr/local/docwire/installed/x64-linux-dynamic/lib:/usr/local/docwire/installed/x64-linux-dynamic/lib/docwire_system_libraries:$LD_LIBRARY_PATH"
 ENV CPLUS_INCLUDE_PATH="/usr/local/docwire/installed/x64-linux-dynamic/include:$CPLUS_INCLUDE_PATH"
@@ -117,8 +128,16 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html/storage
 RUN chmod -R 755 /var/www/html/bootstrap/cache
 
+COPY config/laravel.cron /etc/cron.d/laravel.cron
+
+RUN mkdir /opt/tools
+COPY scripts/entrypoint.sh /opt/tools/entrypoint.sh
+RUN chmod +x /opt/tools/entrypoint.sh
+
 EXPOSE 80
 
 # USER www-data
 
-ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+ENTRYPOINT ["/opt/tools/entrypoint.sh"]
+
+# ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
