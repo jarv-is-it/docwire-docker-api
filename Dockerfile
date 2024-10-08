@@ -50,14 +50,14 @@ RUN apt-get update && \
         tar \
         bzip2 \ 
         libgomp1 \
+        imagemagick \
         libcap2-bin && \
     setcap 'cap_net_bind_service=+ep' /usr/sbin/apache2 && \
     dpkg --purge libcap2-bin && \
     apt-get -y autoremove && \
+    apt-get clean && \
     a2disconf other-vhosts-access-log && \
     chown -Rh www-data:www-data /var/run/apache2 && \
-    apt-get -y install --no-install-recommends imagemagick && \
-    apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     a2enmod rewrite headers expires ext_filter
 

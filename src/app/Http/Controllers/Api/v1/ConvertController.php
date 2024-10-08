@@ -2,60 +2,84 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Components\Helper;
-use App\Http\Requests\ConvertRequest;
-use Spatie\TemporaryDirectory\TemporaryDirectory;
+use App\Components\Convert;
+use App\Enums\ConversionOutput;
+use App\Http\Requests\AsyncConvertRequest;
+use App\Http\Requests\SyncConvertRequest;
+use App\Jobs\ConvertJob;
+use App\Models\Conversion;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ConvertController
 {
     protected const FILENAME = 'content';
 
-    public function sync(ConvertRequest $request)
+    public function sync(SyncConvertRequest $request)
     {
         $data = $request->validated();
 
-        $data['output'] = $data['output'] ?? 'plain_text';
+        $data['output'] = ConversionOutput::from($data['output'] ?? 'plain_text');
         $data['language'] = $data['language'] ?? 'eng';
+        $data['content'] = base64_decode($data['content']);
 
-        $extension = pathinfo($data['filename'], PATHINFO_EXTENSION);
-
-        $directory = (new TemporaryDirectory())->create();
-        $path = $directory->path(static::FILENAME . '.' . $extension);
-
-        file_put_contents($path, base64_decode($data['content']));
-
-        $command = sprintf('"%s" --input-file "%s" --output_type %s --language %s', config('services.docwire.path'),  $path, $data['output'], $data['language']);
-
-        exec($command, $output, $resultCode);
-
-        $content = Helper::fixEncoding(implode(PHP_EOL, $output));
-
-        $directory->delete();
-
-        if ($resultCode != 0) {
-            return response()->json([
-                'success' => false,
-                'code' => $resultCode,
-                'message' => $content,
-                'command' => $command,
-            ], 500);
-        }
+        $conversion = Convert::execute(
+            $data['filename'],
+            $data['content'],
+            $data['output'],
+            $data['language']
+        );
 
         return response()->json([
-            'success' => true,
-            'content' => $content,
+            'success' => $conversion->success,
+            'code' => $conversion->code,
+            'content' => $conversion->content,
+            'command' => $conversion->command,
         ]);
     }
 
-    public function async(ConvertRequest $request)
+    public function async(AsyncConvertRequest $request)
     {
         $data = $request->validated();
 
-        // TODO: Implement this!
+        $data['output'] = ConversionOutput::from($data['output'] ?? 'plain_text');
+        $data['language'] = $data['language'] ?? 'eng';
+
+        $extension = pathinfo($data['filename'], PATHINFO_EXTENSION);
+        $path = sprintf('conversions/%s.%s', Str::random(40), $extension);
+
+        Storage::put($path, base64_decode($data['content']));
+
+        $conversion = Conversion::create([
+            'filename' => $data['filename'],
+            'extension' => $extension,
+            'path' => $path,
+            'identifier' => $data['identifier'],
+            'webhook' => $data['webhook'],
+            'output' => $data['output'],
+            'language' => $data['language'],
+        ]);
+
+        ConvertJob::dispatch($conversion);
+
+        return response()->json([
+            'success' => true,
+            'code' => 0,
+            'content' => 'Conversion started, wait for the webhook to be called.',
+            'command' => null,
+        ]);
     }
 
-    protected function rules()
+    // TODO: Remove this!
+    /*
+    public function webhook(Request $request)
     {
-        return [];
+        Storage::put('log.json', json_encode($request->json()->all()));
+
+        return response()->json([
+            'done' => true,
+        ]);
     }
+    // */
+    // /TODO: Remove this!
 }
