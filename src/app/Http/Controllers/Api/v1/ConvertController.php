@@ -69,17 +69,4 @@ class ConvertController
             'command' => null,
         ]);
     }
-
-    // TODO: Remove this!
-    /*
-    public function webhook(Request $request)
-    {
-        Storage::put('log.json', json_encode($request->json()->all()));
-
-        return response()->json([
-            'done' => true,
-        ]);
-    }
-    // */
-    // /TODO: Remove this!
 }
