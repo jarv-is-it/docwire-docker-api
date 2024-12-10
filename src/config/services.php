@@ -38,5 +38,4 @@ return [
     'docwire' => [
         'path' => env('DOCWIRE_PATH', 'docwire'),
     ],
-
 ];

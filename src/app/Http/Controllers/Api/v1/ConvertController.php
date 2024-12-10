@@ -23,7 +23,7 @@ class ConvertController
         $data['language'] = $data['language'] ?? 'eng';
         $data['content'] = base64_decode($data['content']);
 
-        $conversion = Convert::execute(
+        $conversion = Convert::make()->execute(
             $data['filename'],
             $data['content'],
             $data['output'],

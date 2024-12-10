@@ -25,7 +25,7 @@ class ConvertJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $result = Convert::execute(
+        $result = Convert::make()->execute(
             $this->conversion->filename,
             $this->conversion->content,
             $this->conversion->output,

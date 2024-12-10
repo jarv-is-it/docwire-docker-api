@@ -11,9 +11,14 @@ class Convert
 {
     protected const FILENAME = 'content';
 
-    public static function execute($filename, $content, ConversionOutput $output = ConversionOutput::PlainText, $language = 'eng'): ConversionResponseData
+    public static function make()
     {
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        return new static();
+    }
+
+    public function execute($filename, $content, ConversionOutput $output = ConversionOutput::PlainText, $language = 'eng'): ConversionResponseData
+    {
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         $directory = (new TemporaryDirectory())->create();
         $path = $directory->path(static::FILENAME . '.' . $extension);

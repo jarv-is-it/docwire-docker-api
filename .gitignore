@@ -2,7 +2,7 @@ test
 prune.bat
 build.bat
 shell.bat
-start.bat
+run.bat
 stop.bat
 push.bat
 update.bat
