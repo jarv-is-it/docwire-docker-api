@@ -46,7 +46,7 @@
         <blockquote>
             <b>filename</b> <em>required</em> The filename to be converted (e.g. sample.pdf).<br>
             <b>content</b> <em>required</em> The base64 encoded content of the file.<br>
-            <b>output</b> <em>optional</em> The expected output. Accepted values: plain_text, html, csv or metadata. Default value: plain_text<br>
+            <b>output</b> <em>optional</em> The expected output. Accepted values: markdown, plain_text, html, csv or metadata. Default value: plain_text<br>
             <b>language</b> <em>optional</em> The ISO 639-3 identifiers like used by the OCR (e.g. ita, eng, fra, spa, deu, etc.). Default value: eng<br>
         </blockquote>
         <b>Example payload:</b>

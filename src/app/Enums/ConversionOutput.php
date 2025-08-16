@@ -8,4 +8,5 @@ enum ConversionOutput: string
     case Html = 'html';
     case Csv = 'csv';
     case Metadata = 'metadata';
+    case Markdown = 'markdown';
 }

@@ -5,6 +5,8 @@ namespace App\Components;
 use App\Components\Helper;
 use App\Data\ConversionResponseData;
 use App\Enums\ConversionOutput;
+use League\HTMLToMarkdown\Converter\TableConverter;
+use League\HTMLToMarkdown\HtmlConverter;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 
 class Convert
@@ -25,13 +27,22 @@ class Convert
 
         file_put_contents($path, $content);
 
-        $command = sprintf('"%s" --input-file "%s" --output_type %s --language %s', config('services.docwire.path'),  $path, $output->value, $language);
+        $outputParam = match ($output) {
+            ConversionOutput::Markdown => 'html',
+            default => $output->value,
+        };
 
-        exec($command, $output, $resultCode);
+        $command = sprintf('"%s" --input-file "%s" --output_type %s --language %s', config('services.docwire.path'),  $path, $outputParam, $language);
 
-        $content = Helper::fixEncoding(implode(PHP_EOL, $output));
+        exec($command, $result, $resultCode);
+
+        $content = Helper::fixEncoding(implode(PHP_EOL, $result));
 
         $directory->delete();
+
+        if ($output === ConversionOutput::Markdown) {
+            $content = $this->convertToMarkdown($content);
+        }
 
         return new ConversionResponseData(
             ($resultCode == 0),
@@ -39,5 +50,20 @@ class Convert
             $content,
             $command,
         );
+    }
+
+    protected function convertToMarkdown($content)
+    {
+        $converter = new HtmlConverter([
+            'strip_tags' => true,
+            'strip_placeholder_links' => true,
+            'use_autolinks' => false,
+            'hard_break' => true,
+            'remove_nodes' => 'script style iframe',
+        ]);
+
+        $converter->getEnvironment()->addConverter(new TableConverter());
+
+        return $converter->convert($content);
     }
 }

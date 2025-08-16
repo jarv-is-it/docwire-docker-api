@@ -8,6 +8,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "league/html-to-markdown": "^5.1",
         "spatie/temporary-directory": "^2.2"
     },
     "require-dev": {
