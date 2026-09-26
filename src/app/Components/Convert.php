@@ -18,7 +18,7 @@ class Convert
         return new static();
     }
 
-    public function execute($filename, $content, ConversionOutput $output = ConversionOutput::PlainText, $language = 'eng'): ConversionResponseData
+    public function execute(string $filename, string $content, ConversionOutput $output = ConversionOutput::PlainText, string $language = 'eng'): ConversionResponseData
     {
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
@@ -26,6 +26,12 @@ class Convert
         $path = $directory->path(static::FILENAME . '.' . $extension);
 
         file_put_contents($path, $content);
+
+        if ($extension === 'pdf') {
+            $decryptedPath = $directory->path(static::FILENAME . '-decrypted.pdf');
+            $this->decryptPdf($path, $decryptedPath);
+            $path = $decryptedPath;
+        }
 
         $outputParam = match ($output) {
             ConversionOutput::Markdown => 'html',
@@ -50,6 +56,22 @@ class Convert
             $content,
             $command,
         );
+    }
+
+    protected function decryptPdf(string $pdfFile, string $outputFile): void
+    {
+        if (! is_readable($pdfFile)) {
+            throw new \RuntimeException("PDF file not found or not readable: {$pdfFile}");
+        }
+
+        $command = 'qpdf ' . escapeshellarg($pdfFile)
+            . ' --remove-restrictions --decrypt ' . escapeshellarg($outputFile);
+
+        exec($command, $cmdOutput, $exitCode);
+
+        if ($exitCode !== 0) {
+            throw new \RuntimeException("Failed to decrypt {$pdfFile} (exit code: {$exitCode})");
+        }
     }
 
     protected function convertToMarkdown($content)

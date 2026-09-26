@@ -23,6 +23,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get -y install \
         poppler-utils \
+        qpdf \
         supervisor \
         cron \
         apache2 \
