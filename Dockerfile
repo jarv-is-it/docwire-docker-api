@@ -22,32 +22,37 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get -y install \
+        ca-certificates \
+        gnupg \
+        software-properties-common && \
+    LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php && \
+    apt-get update && \
+    apt-get -y install \
         poppler-utils \
         qpdf \
         supervisor \
         cron \
         apache2 \
-        libapache2-mod-php \
+        libapache2-mod-php8.4 \
         libapache2-mod-auth-openidc \
-        php-bcmath \
-        php-cli \
-        php-curl \
-        php-gd \
-        php-intl \
-        php-json \
-        php-ldap \
-        php-mbstring \
-        php-memcached \
-        php-mysql \
-        php-pgsql \
-        php-sqlite3 \
-        php-soap \
-        php-tidy \
-        php-uploadprogress \
-        php-xml \
-        php-xmlrpc \
-        php-yaml \
-        php-zip \
+        php8.4-bcmath \
+        php8.4-cli \
+        php8.4-curl \
+        php8.4-gd \
+        php8.4-intl \
+        php8.4-ldap \
+        php8.4-mbstring \
+        php8.4-memcached \
+        php8.4-mysql \
+        php8.4-pgsql \
+        php8.4-sqlite3 \
+        php8.4-soap \
+        php8.4-tidy \
+        php8.4-uploadprogress \
+        php8.4-xml \
+        php8.4-xmlrpc \
+        php8.4-yaml \
+        php8.4-zip \
         wget \
         tar \
         bzip2 \ 
@@ -96,7 +101,7 @@ ARG CACHEBUST_CONFIG=3
 
 COPY config/000-default.conf /etc/apache2/sites-available
 COPY config/mpm_prefork.conf /etc/apache2/mods-available
-COPY config/99-local.ini     /etc/php/8.1/apache2/conf.d
+COPY config/99-local.ini     /etc/php/8.4/apache2/conf.d
 COPY config/supervisor.conf     /etc/supervisor/conf.d/supervisor.conf
 
 RUN rm -f /var/www/html/index.html
