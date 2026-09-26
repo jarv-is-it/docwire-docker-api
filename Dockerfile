@@ -60,7 +60,6 @@ RUN apt-get update && \
         imagemagick \
         libcap2-bin && \
     setcap 'cap_net_bind_service=+ep' /usr/sbin/apache2 && \
-    dpkg --purge libcap2-bin && \
     apt-get -y autoremove && \
     apt-get clean && \
     a2disconf other-vhosts-access-log && \
@@ -86,9 +85,9 @@ RUN mkdir /opt/temp && \
     rm -rf /usr/local/docwire/installed/x64-linux-dynamic/src 
     
 ENV PATH="/usr/local/docwire/installed/x64-linux-dynamic/tools:$PATH"
-ENV LD_LIBRARY_PATH="/usr/local/docwire/installed/x64-linux-dynamic/lib:/usr/local/docwire/installed/x64-linux-dynamic/lib/docwire_system_libraries:$LD_LIBRARY_PATH"
-ENV CPLUS_INCLUDE_PATH="/usr/local/docwire/installed/x64-linux-dynamic/include:$CPLUS_INCLUDE_PATH"
-ENV LIBRARY_PATH="/usr/local/docwire/installed/x64-linux-dynamic/lib:$LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="/usr/local/docwire/installed/x64-linux-dynamic/lib:/usr/local/docwire/installed/x64-linux-dynamic/lib/docwire_system_libraries"
+ENV CPLUS_INCLUDE_PATH="/usr/local/docwire/installed/x64-linux-dynamic/include"
+ENV LIBRARY_PATH="/usr/local/docwire/installed/x64-linux-dynamic/lib"
 ENV OPENSSL_MODULES="/usr/local/docwire/installed/x64-linux-dynamic/lib/ossl-modules"
 
 # Install composer
